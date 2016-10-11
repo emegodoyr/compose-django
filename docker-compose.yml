@@ -1,0 +1,57 @@
+verion : "2"
+
+services:
+
+  django:
+    hostname: 'django-app'
+    container_name : django-app
+    build: django
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "80:8000"
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    restart: always
+    links:
+      - mysql:mysql
+    depends_on:
+      - mysql
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.15
+        ipv6_address: 2001:3984:3989::15
+
+  mysql:
+    hostname: 'django-db'
+    container_name : django-db
+    image: mysql:latest
+    volumes:
+       - ./.model:/var/lib/mysql
+       - ./dump/back:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=mypass
+      - MYSQL_DATABASE=django
+      - MYSQL_ALLOW_EMPTY_PASSWORD=no
+      - MYSQL_ROOT_PASSWORD=mypass
+    ports:
+      - "3306:3306"
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.10
+        ipv6_address: 2001:3984:3989::10
+
+
+networks:
+  app_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.238.0/24
+        gateway: 172.16.238.1
+      - subnet: 2001:3984:3989::/64
+        gateway: 2001:3984:3989::1
