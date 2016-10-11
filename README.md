@@ -9,7 +9,7 @@ DATABASES = {
         'NAME': 'django',
         'USER': 'admin',
         'PASSWORD': 'mypass',
-        'HOST': 'database',
+        'HOST': 'mysql',
         'PORT': '3306',
     }
 }
